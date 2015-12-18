@@ -1,11 +1,33 @@
 <html>
   <head>
-    <title>Team 3128 Team Anaylsis</title>
+    <title>Team 3128 Team Analysis</title>
+    <script type="text/javascript" src="includes/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="includes/jquery.tablesorter.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="api-thebluealliance.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $("#go-team-list").click( function() {
+          nar.displayTeamList();
+        });
+        $("#go-experiment-1").click( function() {
+          nar.displayListYearlyAverage();
+        });
+      });
+    </script>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <p>To use, please open the Javascript console on your browser and use the <pre>nar.version()</pre> syntax
-      to execute queries</p>
+    <header>
+      <nav>
+        <ul>
+          <li id="go-team-list">Team List</li>
+          <li id="go-experiment-1">Experiment #1</li>
+        </ul>
+      </nav>
+      <h1>Team 3128 Team Analysis</h1>
+
+    </header>
+    <div id="results"></div>
   </body>
 </html>

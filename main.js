@@ -4,12 +4,68 @@ window.nar = (function( window ){
     'api' : {},
     'provide_default_callback' : true,
   };
+  var $ = window.jQuery;
 
   obj.version = function(){
     return 'Currently running version ' + obj.current_version + ' of TBA Analysis';
   }
 
-  obj.getTeamsYearAverageByEvent = function( event_key, year) {
+  obj.displayTeamList = function() {
+
+    var event_key = "2015casd";
+    var teams = obj.api.TBA.event.teams( event_key );
+    var htmlTeamList = htmlTable([
+      'Number',
+      'Team Name'
+    ]);
+    teams.then( function( teams ){
+      teams.forEach( function( team ) {
+        htmlTeamList.add([
+          team.team_number,
+          team.nickname,
+        ]);
+      } );
+      $('#results').html( htmlTeamList.getHTML() );
+      $("#results table").tablesorter( {
+        sortList: [[0,0]],
+      });
+    } );
+
+  }
+
+  obj.displayListYearlyAverage = function() {
+
+    var event_key = "2015casd";
+    var year = "2015";
+    var data = obj.getTeamsYearAverageByEvent( event_key, year );
+
+    var htmlTeamList = htmlTable([
+      'Number',
+      'Qualification Score',
+      'Quarterfinals Score',
+      'Semifinals Score',
+      'Finals Score',
+    ]);
+    data.then( function( teams ){
+      teams.forEach( function( team ) {
+        htmlTeamList.add([
+          team.key,
+          team.qm,
+          team.qf,
+          team.sf,
+          team.f,
+        ]);
+      } );
+      console.log( htmlTeamList );
+      $('#results').html( htmlTeamList.getHTML() );
+      $("#results table").tablesorter( {
+        sortList: [[0,0]],
+      });
+    } );
+
+  }
+
+  obj.getTeamsYearAverageByEvent = function( event_key, year ) {
 
     if ( typeof event_key === "undefined" ) {
       throw "No event key argument provided.";
@@ -173,6 +229,41 @@ window.nar = (function( window ){
     }
     return callback;
 
+  }
+
+  var htmlTable = function( columns ){
+    var obj = {
+      'columns' : columns,
+      'data' : [],
+    };
+
+    obj.add = function( row_data ) {
+      obj.data.push( row_data );
+    }
+
+    obj.getHTML = function() {
+
+      var head = '<tr>';
+      obj.columns.forEach( function( value ){
+        head += '<th>' + value + '</th>';
+      } );
+      head += '</tr>';
+
+      var rows = '';
+      obj.data.forEach( function( values ){
+        var rowHTML = '<tr>';
+        values.forEach( function( value ){
+          rowHTML += '<td>' + value + '</td>';
+        } );
+        rowHTML += '</tr>';
+        rows += rowHTML;
+      } );
+
+      return '<table><thead>' + head + '</thead><tbody>' + rows + '</tbody></table>';
+
+    }
+
+    return obj;
   }
 
   return obj;
