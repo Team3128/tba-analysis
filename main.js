@@ -45,6 +45,7 @@ window.nar = (function( window ){
       'Quarterfinals Score',
       'Semifinals Score',
       'Finals Score',
+      'Events',
     ]);
     data.then( function( teams ){
       teams.forEach( function( team ) {
@@ -54,9 +55,10 @@ window.nar = (function( window ){
           team.qf,
           team.sf,
           team.f,
+          team.event_count,
         ]);
       } );
-      console.log( htmlTeamList );
+
       $('#results').html( htmlTeamList.getHTML() );
       $("#results table").tablesorter( {
         sortList: [[0,0]],
@@ -105,13 +107,14 @@ window.nar = (function( window ){
         } );
 
         var scores = {
-          'key'  : team_key,
+          'key' : team_key,
           'year' : year,
-          'qm'   : 0,
-          'ef'   : 0,
-          'qf'   : 0,
-          'sf'   : 0,
-          'f'    : 0,
+          'qm' : 0,
+          'ef' : 0,
+          'qf' : 0,
+          'sf' : 0,
+          'f' : 0,
+          'event_count' : 0,
         }
         Promise.all(eventResults).then( function( results ) {
 
@@ -128,6 +131,7 @@ window.nar = (function( window ){
           scores.qf = scores.qf/results.length;
           scores.sf = scores.sf/results.length;
           scores.f  = scores.f/results.length;
+          scores.event_count = results.length;
           resolve( scores );
 
         });
