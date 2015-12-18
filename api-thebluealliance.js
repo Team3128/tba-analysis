@@ -336,7 +336,7 @@ window.nar.api.TBA = (function( window ){
   }
 
   obj.cache = ( function() {
-    var data = {};
+    var data = window.localStorage.narCache;
     var obj = {
       'enabled' : true,
       'stats'   : {
@@ -347,22 +347,27 @@ window.nar.api.TBA = (function( window ){
     };
 
     obj.put = function( key, value ) {
-      data[key] = value;
+
+      value = JSON.stringify( value );
+      localStorage.setItem( key, value );
+
       obj.stats.writes += 1;
       return true;
     }
 
     obj.get = function( key ) {
+
       var result = undefined;
       if ( obj.exists ( key ) ) {
-        result = data[key];
+        result = localStorage.getItem( key );
+        result = JSON.parse( result );
       }
       return result;
     }
 
     obj.exists = function( key ) {
       var result = false;
-      if ( key in data ) {
+      if ( localStorage.getItem( key ) ) {
         result = true;
       }
 
