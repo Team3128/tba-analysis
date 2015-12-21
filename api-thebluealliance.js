@@ -19,7 +19,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "team/" + team_key;
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
   }
 
   obj.team.list = function( page_num ) {
@@ -30,7 +30,7 @@ window.nar.api.TBA = (function( window ){
 
     page_num = parseInt( page_num );
     path = "teams/" + page_num;
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -41,7 +41,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "team/" + team_key + "/years_participated";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -62,7 +62,7 @@ window.nar.api.TBA = (function( window ){
       path = "team/" + team_key + "/media";
     }
 
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -74,7 +74,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "team/" + team_key + "/history/events";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -85,7 +85,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "team/" + team_key + "/history/awards";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -96,7 +96,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "team/" + team_key + "/history/robots";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -112,7 +112,17 @@ window.nar.api.TBA = (function( window ){
 
     year = parseInt( year );
     path = "team/" + team_key + "/" + year + "/events";
-    return http_get( generate_api_url( path ) );
+    return http_get( path, function( data ) {
+      return data.map( function( value ) {
+        return {
+          'key' : value.key,
+          'official' : value.official,
+          'event_district' : value.event_district,
+          'event_code' : value.event_code,
+          'event_type' : value.event_type,
+        }
+      } );
+    } );
 
   }
 
@@ -126,7 +136,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "team/" + team_key + "/event/" + event_key + "/awards";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -139,8 +149,22 @@ window.nar.api.TBA = (function( window ){
       throw "Invalid event key argument given.";
     }
 
-    path = "team/" + team_key + "/event/" + event_key + "/matches";
-    return http_get( generate_api_url( path ) );
+    return new Promise( function ( resolve, reject ) {
+      obj.event.matches( event_key ).then( function( matches ) {
+        var resultSet = [];
+        matches.forEach( function( match ){
+          var teams = match.alliances.blue.teams.concat(match.alliances.red.teams);
+          if ( team_key === "frc3041" ) {
+            console.log( teams );
+          }
+          if ( teams.indexOf( team_key ) !== -1 ){
+            resultSet.push( match );
+          } else {
+          }
+        } );
+        resolve( resultSet );
+      } );
+    } );
 
   }
 
@@ -153,7 +177,7 @@ window.nar.api.TBA = (function( window ){
 
     year = parseInt( year );
     path = "events/" + year;
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -164,7 +188,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "event/" + event_key;
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -175,7 +199,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "event/" + event_key + "/teams";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -186,7 +210,17 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "event/" + event_key + "/matches";
-    return http_get( generate_api_url( path ) );
+    return http_get( path, function( data ) {
+      return data.map( function( value ) {
+        return {
+          'key' : value.key,
+          'comp_level' : value.comp_level,
+          'alliances' : value.alliances,
+          'score_breakdown' : value.score_breakdown,
+          'time' : value.time,
+        }
+      } );
+    } );
 
   }
 
@@ -197,7 +231,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "event/" + event_key + "/stats";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -208,7 +242,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "event/" + event_key + "/rankings";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -219,7 +253,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "event/" + event_key + "/awards";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -230,7 +264,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "event/" + event_key + "/district_points";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -242,7 +276,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "match/" + match_key;
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -254,7 +288,7 @@ window.nar.api.TBA = (function( window ){
     }
 
     path = "districts/" + year;
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -269,7 +303,7 @@ window.nar.api.TBA = (function( window ){
 
     year = parseInt( year );
     path = "district/" + district_key + "/" + year + "/events";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
@@ -284,11 +318,11 @@ window.nar.api.TBA = (function( window ){
 
     year = parseInt( year );
     path = "district/" + district_key + "/" + year + "/rankings";
-    return http_get( generate_api_url( path ) );
+    return http_get( path );
 
   }
 
-  function http_get( url )
+  function http_get( url, cache_filter )
   {
     run_config_check();
     var indentifier = obj.team_number + ':' + obj.app_identifier + ':' + obj.current_version;
@@ -303,11 +337,15 @@ window.nar.api.TBA = (function( window ){
 
       // Otherwise, get via resource
       var resource = new XMLHttpRequest();
-      resource.open( "GET", url, true );
+      resource.open( "GET", generate_api_url( path ), true );
 
       resource.onload = function() {
           if ( resource.status == 200 ) {
               var data = JSON.parse(resource.responseText);
+              if ( typeof cache_filter === "function" ) {
+                console.log( 'Filtering' );
+                data = cache_filter( data );
+              }
               obj.cache.put( url, data );
               resolve( data );
           } else {
