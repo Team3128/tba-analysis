@@ -10,7 +10,6 @@ header {
   margin: 0;
   display: block;
   height: 50px;
-  margin-bottom: 10px;
 }
 
 h1 {
@@ -36,11 +35,22 @@ nav ul li a {
   display: block;
 }
 
+.secondary-nav {
+  background-color: #EEEEEF;
+  padding: 10px 5px;
+  margin-bottom: 10px;
+}
+
+#event-selector {
+}
+
+#event-selector li {
+  display: inline;
+  background-color: #CCCCCC;
+  padding: 16px;
+}
+
 #results {
-  border: 1px solid black;
-  width: 50%;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 #results table {
@@ -49,13 +59,22 @@ nav ul li a {
   width: 100%;
 }
 
-#results th {
-  font-size: 1.1em;
-  cursor: pointer;
-}
-
 #results td, th {
   border: 1px solid #CCCCCC;
   margin: 0;
   padding: 3px 5px;
+}
+
+#results th {
+  font-size: 1.1em;
+  cursor: pointer;
+  text-align: center;
+}
+
+#results td {
+  text-align: right;
+}
+
+.selected {
+  border: 5px solid black;
 }

@@ -1,17 +1,17 @@
 <html>
   <head>
-    <title>Team 3128 Team Analysis</title>
+    <title>Team 3128</title>
     <script type="text/javascript" src="includes/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="includes/jquery.tablesorter.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="api-thebluealliance.js"></script>
     <script type="text/javascript">
       $(document).ready(function(){
-        $("#go-team-list").click( function() {
-          nar.displayTeamList();
+        $("#event-selector li").click( function() {
+          nar.selectEvent( $(this).attr( 'data-event' ) );
         });
-        $("#go-experiment-1").click( function() {
-          nar.displayListYearlyAverage();
+        $("#view-selector li").click( function() {
+          nar.selectView( $(this).attr( 'data-view' ) );
         });
       });
     </script>
@@ -20,14 +20,24 @@
   <body>
     <header>
       <nav>
-        <ul>
-          <li id="go-team-list">Team List</li>
-          <li id="go-experiment-1">Experiment #1</li>
+        <ul id="view-selector">
+          <li data-view="team-list">Team List</li>
+          <li data-view="2015-avg-score">2015 Average Score</li>
+          <li data-view="2014-avg-score">2014 Average Score</li>
+          <li data-view="2013-avg-score">2013 Average Score</li>
         </ul>
       </nav>
-      <h1>Team 3128 Team Analysis</h1>
-
+      <h1>Team 3128</h1>
     </header>
+    <div class="secondary-nav">
+      <ul id="event-selector">
+        <li data-event="2016casd">CASD 2016</li>
+        <li data-event="2015casd">CASD 2015</li>
+        <li data-event="2016nvlv">NVLV 2016</li>
+        <li data-event="2015nvlv">NVLV 2015</li>
+        <li data-event="2015carm">CARM 2015</li>
+      </ul>
+    </div>
     <div id="results"></div>
   </body>
 </html>

@@ -3,6 +3,8 @@ window.nar = (function( window ){
     'current_version' : '0.1',
     'api' : {},
     'provide_default_callback' : true,
+    'current_event' : '',
+    'current_view' : '',
   };
   var $ = window.jQuery;
 
@@ -10,9 +12,45 @@ window.nar = (function( window ){
     return 'Currently running version ' + obj.current_version + ' of TBA Analysis';
   }
 
+  obj.draw = function () {
+    console.log( 'View ' + obj.current_view + ' / Event ' + obj.current_event )
+    obj.renderer.notify();
+
+    $('li[data-event=' + obj.current_event + ']').addClass('selected');
+  }
+
+  obj.renderer = {
+    'callbacks' : [],
+    'register' : function ( callback ) {
+      obj.renderer.callbacks.push( callback );
+    },
+    'notify' : function () {
+      obj.renderer.callbacks.forEach( function( callback ) {
+        callback( obj );
+      } );
+    }
+  }
+
+  obj.selectView = function ( view ) {
+    obj.current_view = view;
+    obj.draw();
+  }
+
+  obj.selectEvent = function ( event_key ) {
+    obj.current_event = event_key;
+    obj.draw();
+  }
+
   obj.displayTeamList = function() {
 
-    var event_key = "2015casd";
+    if ( obj.current_view !== 'team-list' ) {
+      return;
+    }
+    if ( obj.current_event == '' ) {
+      return;
+    }
+
+    var event_key = obj.current_event;
     var teams = obj.api.TBA.event.teams( event_key );
     var htmlTeamList = htmlTable([
       'Number',
@@ -32,23 +70,30 @@ window.nar = (function( window ){
     } );
 
   }
+  obj.renderer.register( obj.displayTeamList );
 
-  obj.displayListYearlyAverage = function() {
+  obj.displayListYearlyAverage = function( year ) {
 
-    var event_key = "2015casd";
-    var year = "2015";
-    var data = obj.getTeamsYearAverageByEvent( event_key, year );
+    if ( obj.current_event == '' ) {
+      return;
+    }
+
+    var event_key = obj.current_event;
+    var teamData = obj.getTeamsYearAverageByEvent( event_key, year );
 
     var htmlTeamList = htmlTable([
-      'Number',
+      'Team',
       'Qualification Score',
       'Quarterfinals Score',
       'Semifinals Score',
       'Finals Score',
       'Events',
     ]);
-    data.then( function( teams ){
+    teamData.then( function( teams ){
       teams.forEach( function( team ) {
+        team = MatchHelper.cleanStats( team );
+        team = MatchHelper.cleanTeam( team );
+        team = MatchHelper.stripZeros( team );
         htmlTeamList.add([
           team.key,
           team.qm,
@@ -66,6 +111,21 @@ window.nar = (function( window ){
     } );
 
   }
+  obj.renderer.register( function(){
+    if ( obj.current_view === '2015-avg-score' ) {
+      obj.displayListYearlyAverage( "2015" );
+    }
+  } );
+  obj.renderer.register( function(){
+    if ( obj.current_view === '2014-avg-score' ) {
+      obj.displayListYearlyAverage( "2014" );
+    }
+  } );
+  obj.renderer.register( function(){
+    if ( obj.current_view === '2013-avg-score' ) {
+      obj.displayListYearlyAverage( "2013" );
+    }
+  } );
 
   obj.getTeamsYearAverageByEvent = function( event_key, year ) {
 
@@ -214,6 +274,31 @@ window.nar = (function( window ){
       }
 
       return 'none';
+    },
+    'cleanStats' : function ( summary ) {
+      var round = MatchHelper.round;
+      summary.qm = round( summary.qm, 1 );
+      summary.ef = round( summary.ef, 1 );
+      summary.qf = round( summary.qf, 1 );
+      summary.sf = round( summary.sf, 1 );
+      summary.f = round( summary.f, 1 );
+      return summary;
+    },
+    'cleanTeam' : function ( summary ) {
+      summary.key = summary.key.replace( "frc", "" );
+      return summary;
+    },
+    'stripZeros' : function ( summary ) {
+      summary.qm = ( summary.qm == 0 ? '-' : summary.qm )
+      summary.ef = ( summary.ef == 0 ? '-' : summary.ef )
+      summary.qf = ( summary.qf == 0 ? '-' : summary.qf )
+      summary.sf = ( summary.sf == 0 ? '-' : summary.sf )
+      summary.f = ( summary.f == 0 ? '-' : summary.f )
+      return summary;
+    },
+    'round' : function ( number, places ) {
+      var factor = Math.pow( 10, places );
+      return ( Math.round( number * factor ) / factor );
     }
   };
 
